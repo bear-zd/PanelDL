@@ -1,1 +1,1 @@
-# There is noting now
+from logger import log
