@@ -21,10 +21,10 @@ class mysqlConnect():
             self.__conn()
 
     def query(self, sql: str = ''):
-        '''
+        """
         :param sql: sql语句
         :return: 查询返回数量
-        '''
+        """
         self.__reConn()
         try:
             result = self.cursor.execute(sql)
@@ -53,15 +53,6 @@ class mysqlConnect():
     def close(self):
         self.__reConn()
         self.connect.close()
-
-    def insert(self, query: str):
-        self.__reConn()
-        try:
-            self.cursor.execute(query)
-            self.connect.commit()
-        except:
-            self.connect.rollback()
-            raise error('Insert Error!')
 
 
 if __name__ == '__main__':
