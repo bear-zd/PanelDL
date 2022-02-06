@@ -1,6 +1,5 @@
 import pymysql
-from private import DATABASE_CONFIG
-from exception import error
+from PanelDL.utils.private import DATABASE_CONFIG
 
 
 class mysqlConnect():
@@ -11,7 +10,7 @@ class mysqlConnect():
 
     def __conn(self):
         self.connect = pymysql.connect(**self.config)
-        self.cursor = self.connect.cursor()
+        self.cursor = self.connect.cursor(self.cursorType)
         print('connected')
 
     def __reConn(self):
@@ -29,26 +28,29 @@ class mysqlConnect():
         try:
             result = self.cursor.execute(sql)
             self.connect.commit()
-            self.cursor.close()
+            #self.cursor.close()
             return True, result
         except:
-            print("Quary error")
+            print("Query error")
             return False, None
+
 
     def select(self, sql: str):
         self.__reConn()
         try:
             self.cursor.execute(sql)
             result = self.cursor.fetchall()
-            self.cursor.close()
+            #self.cursor.close()
             return True, result
         except:
             print('Select Error')
             return False, None
 
+
     def selectLimit(self, sql: str, offset: int = 0, length: int = 20):
         sql = '%s limit %d , %d ;' % (sql, offset, length)
-        self.select(sql)
+        return self.select(sql)
+
 
     def close(self):
         self.__reConn()
@@ -56,9 +58,6 @@ class mysqlConnect():
 
 
 if __name__ == '__main__':
-    pass
-    '''删除注释来测试这部分的代码
     op = mysqlConnect(DATABASE_CONFIG)
-    for i in range(5):
-        print(op.query('SHOW TABLES;'))
-    '''
+    for i in range(10):
+        print(op.selectLimit('select * from user'))
