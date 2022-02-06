@@ -2,7 +2,7 @@ import pymysql
 from PanelDL.utils.private import DATABASE_CONFIG
 
 
-class mysqlConnect():
+class mysqlConnect(object):
     def __init__(self, connectConfig=DATABASE_CONFIG):
         self.config = connectConfig
         self.cursorType = pymysql.cursors.DictCursor
@@ -52,8 +52,9 @@ class mysqlConnect():
         return self.select(sql)
 
 
-    def close(self):
+    def __del__(self):
         self.__reConn()
+        self.cursor.close()
         self.connect.close()
 
 
