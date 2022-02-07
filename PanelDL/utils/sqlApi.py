@@ -1,5 +1,5 @@
 import pymysql
-from PanelDL.utils.private import DATABASE_CONFIG
+from private import DATABASE_CONFIG
 
 
 class mysqlConnect(object):
@@ -58,7 +58,3 @@ class mysqlConnect(object):
         self.connect.close()
 
 
-if __name__ == '__main__':
-    op = mysqlConnect(DATABASE_CONFIG)
-    for i in range(10):
-        print(op.selectLimit('select * from user'))
