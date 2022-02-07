@@ -28,8 +28,9 @@ def login():
     user = request.form.get('user')
     pwd = request.form.get('pwd')
     global query
-    if query.get_user_id(user, pwd) != None:
-        session['user_info'] = user
+    user_id = query.get_user_id(user, pwd)
+    if user_id != None:
+        session['user_info'] = user_id
         return redirect('/menu')
     else:
         return render_template('login.html', msg='用户名或密码输入错误')

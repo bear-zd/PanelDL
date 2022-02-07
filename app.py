@@ -1,8 +1,8 @@
 from dash import Dash, html, dcc
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
+from flask import session
 
-global server
 import plotly.express as px
 import pandas as pd
 
@@ -80,7 +80,7 @@ class userProject:
         menu.layout = html.Div([navbar, sidebar])
 
         self.menu = menu
-
+        # session['user_info']
         @menu.callback(
             Output("navbar-collapse", "is_open"),
             [Input("navbar-toggler", "n_clicks")],
