@@ -7,6 +7,11 @@ import datetime
 
 class sql_query(mysqlConnect):
     def get_user_id(self, email:str, password:str):
+        """
+        @param email: email
+        @param password: password
+        @return: 返回用户的user_id / None(出现多用户或查询不到)
+        """
         sql = "SELECT user_id FROM user WHERE email = \'{}\' and password = \'{}\'".format(email,password)
         print(sql)
         success , results = self.select(sql)
@@ -22,38 +27,47 @@ class sql_query(mysqlConnect):
         return results[0]['user_id']
 
     def get_projects_id_list(self, user_id:int):
+        """
+        获取用户的所有project_id
+        @param user_id: user_id
+        @return: project_id list / None(失败)
+        """
         sql = "SELECT project_id FROM enroll_project WHERE user_id = {}".format(str(user_id))
-        results = self.select(sql)
-        if results[0 == True]:
-            results = results[1]
-        else:
+        success, results = self.select(sql)
+        if success == False:
             return None
         ret = []
         for dict in results :
            ret.append(dict['project_id']) 
-        print("return project_id:")
+        # print("return project_id:")
         return ret
     
     def get_runs_id_list(self, project_id:int):
+        """
+        获取project的所有run_id
+        @param project_id: project_id
+        @return: run_id list / None(失败)
+        """
         sql = "SELECT run_id FROM enroll_run WHERE project_id = {}".format(str(project_id))
-        results = self.select(sql)
-        if results[0 == True]:
-            results = results[1]
-        else:
+        success, results = self.select(sql)
+        if success == False:
             return None
         ret = []
         for dict in results :
            ret.append(dict['run_id']) 
-        print("return run_id:")
+        # print("return run_id:")
         return ret
 
 
     def get_log(self, run_id:int):
+        """
+        获取某次run的所有log信息
+        @param run_id: run_id
+        @return: defaultdict(list) / None(没有相应run_id)
+        """
         sql = "SELECT `key`, value FROM log_data WHERE run_id = {}".format(str(run_id))
-        results = self.select(sql)
-        if results[0 == True]:
-            results = results[1]
-        else:
+        success, results = self.select(sql)
+        if success == False:
             return None
         dict = defaultdict(list)
         for dic in results:
@@ -154,4 +168,4 @@ class sql_query(mysqlConnect):
 
 if __name__ == '__main__':
     query = sql_query()
-    print(query.get_step(11))
+    print(query.get_log(26))
