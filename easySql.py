@@ -7,9 +7,9 @@ import datetime
 
 class sql_query(mysqlConnect):
     def get_user_id(self, email:str, password:str):
-        sql = "SELECT user_id FROM user WHERE email = \'{}\' and password = {}".format(email,password)
+        sql = "SELECT user_id FROM user WHERE email = \'{}\' and password = \'{}\'".format(email,password)
+        print(sql)
         success , results = self.select(sql)
-        #print("results:",results)
         try:
             if success == True:
                 assert(len(results) == 1)
@@ -111,6 +111,47 @@ class sql_query(mysqlConnect):
         return results[0]["project_id"] if len(results) != 0 else self.enroll_project(user_id,project_name)
 
 
+    def enroll_run(self,user_id:int,project_id:int,run_name:str,config:str="NULL"):
+        """
+        注册一项新的run
+        改动enroll_run与run两张表
+        @param user_id:
+        @param project_id:
+        @param run_name:
+        @param config:
+        @return: run_id / None(fail)
+        """
+        run_id = self.get_available("run_id")
+        sql = "INSERT INTO enroll_run(user_id,project_id,run_create_date,run_name,run_id) VALUES({},{},\'{}\',\'{}\',{})".format(user_id,project_id,datetime.datetime.now(),run_name,run_id)
+        success1 , results = self.query(sql)
+
+        sql = "INSERT INTO run(run_id,project_id,config,state,start_time) VALUES({},{},{},\'{}\',\'{}\')".format(run_id,project_id,config,"RUNNING",datetime.datetime.now())
+        success2 , results = self.query(sql)
+        success = success1&success2
+        if not success:
+            print("enroll run error!")
+            return None
+        return run_id
+
+
+    def get_step(self,run_id):
+        sql = 'SELECT step FROM run WHERE run_id = {}'.format(str(run_id))
+        success1 , result = self.select(sql)
+        sql = 'UPDATE run SET step = step + 1 where run_id = {}'.format(str(run_id))
+        success2 , result2 = self.query(sql)
+        return result[0]['step']
+
+
+    def log(self,run_id:int,dic:dict):
+        step = self.get_step(run_id)
+        data = datetime.datetime.now()
+        for key,value in dic.items():
+            sql = 'INSERT INTO log_data(run_id,`key`,log_date,`value`,step) VALUES({},\'{}\',\'{}\',{},{})'.format(run_id,key,data,value,step)
+            print(sql)
+            success , result = self.query(sql)
+            if not success:
+                print("log error!")
+
 if __name__ == '__main__':
     query = sql_query()
-    print(query.touch_project(-1,"d"))
+    print(query.get_step(11))
