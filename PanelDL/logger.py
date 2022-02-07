@@ -1,5 +1,7 @@
 from utils import sqlApi
+import wandb
 
+wandb.init()
 class log:
     """
     """
