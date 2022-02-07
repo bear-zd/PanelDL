@@ -52,7 +52,7 @@ navbar = dbc.NavbarSimple(
 sidebar = dbc.Offcanvas(
 dbc.Container(
         [
-            html.H2("Hello, PanelDLer!", className = "display-4"), 
+            html.H2("Hello, PanelDL!", className = "display-4"), 
             html.Hr(), 
             html.P(
                 "Select your favourite project 😊" , className = "lead"
