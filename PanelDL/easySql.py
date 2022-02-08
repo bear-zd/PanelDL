@@ -171,14 +171,14 @@ class sql_query(mysqlConnect):
             return None
         return results[0]["project_id"] if len(results) != 0 else self.enroll_project(user_id, project_name)
 
-    def enroll_run(self, user_id: int, project_id: int, run_name: str, config: dict = {}):
+    def enroll_run(self, user_id: int, project_id: int, run_name: str, config: str = "NULL"):
         """
         注册一项新的run
         改动enroll_run与run两张表
         @param user_id:
         @param project_id:
         @param run_name:
-        @param config: dict类型！
+        @param config:
         @return: run_id / None(fail)
         """
         run_id = self.get_available("run_id")
@@ -191,13 +191,9 @@ class sql_query(mysqlConnect):
                                                                                                                  json.dumps(config),
                                                                                                                  "RUNNING",
                                                                                                                  datetime.datetime.now())
-        #print(sql)
+        print(sql)
         success2, results = self.query(sql)
-        sql = "UPDATE project SET last_activate_date = \'{}\' WHERE project_id = {}".format(datetime.datetime.now(),project_id)
-        #print(sql)
-        success3 , results = self.query(sql)
-        success = (success1 & success2 & success3)
-        #print(success1, success2, success3)
+        success = success1 & success2
         if not success:
             print("enroll run error!")
             return None
@@ -249,8 +245,24 @@ class sql_query(mysqlConnect):
         if not success:
             print("del error!")
 
+    def get_user_id_by_run_id(self, run_id: int):
+        """
+        返回run的user
+        @param run_id: run_id
+        @return user_id
+        """
+        sql = 'SELECT user_id FROM enroll_run WHERE run_id = {}'.format(run_id)
+        success, results = self.select(sql)
+        try:
+            if success == True:
+                assert (len(results) == 1)
+            else:
+                return None
+        except:
+            return None
+        return results[0]['user_id']
 
-if __name__ == '__main__':
-    query = sql_query()
-    config = {"test":100}
-    query.enroll_run(user_id=-1,project_id=27,run_name="test_config_dump_4",config=config)
+# if __name__ == '__main__':
+#     query = sql_query()
+#     config = {"test":100}
+#     query.enroll_run(user)_id=-1,project_id=27,run_name="test_config_dump_4",config=config)

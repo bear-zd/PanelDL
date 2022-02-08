@@ -90,7 +90,16 @@ class userProject:
             is_open=False,
             style=SIDEBAR_STYLE,
         )
-        menu.layout = html.Div([navbar, sidebar])
+
+
+        graphbar = html.Div(id = "graphbar")
+
+        menu.layout = html.Div([
+                dcc.Location(id='url', refresh=False),
+                navbar, 
+                sidebar, 
+                graphbar
+            ])
 
         self.menu = menu
         @menu.callback(
@@ -155,7 +164,7 @@ class userProject:
                                     "border-left": "5px", 
                                     },
                                 children = [
-                                    dbc.DropdownMenuItem("{}".format(runs_name[i][j])) for j in range(len(runs_id[i]))
+                                    dbc.DropdownMenuItem("{}".format(runs_name[i][j]), href = "/run_id={}".format(runs_id[i][j])) for j in range(len(runs_id[i]))
                                 ],
                             )
                     )
@@ -166,7 +175,36 @@ class userProject:
                 ))
             return ret
              
-    
+        @menu.callback(
+            Output("graphbar", "children"), 
+            Output("open-Menu", "n_clicks"),
+            Input("url", "pathname"), 
+            State("open-Menu", "n_clicks"),
+        )
+        def switch_page(pathname, n_clicks):
+            if("/run_id=" in pathname):
+                run_id = int(pathname[8:])
+                print(run_id)
+                query = sql_query()
+                user_of_run = query.get_user_id_by_run_id(run_id)
+                print(user_of_run)
+                if (user_of_run == None) | (user_of_run != self.user_id):
+                    return [], n_clicks
+        ############################################################################
+        # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+        ############################################################################
+
+                ret = []
+                # ret.append(html.H2("{}".format(pathname)))
+                return [html.H2("{}".format(pathname))], n_clicks + 1
+                # return ret, n_clicks + 1
+
+        # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+        ############################################################################
+        #                             END OF YOUR CODE                             #
+        ############################################################################
+
+            return [], n_clicks
 
 # if __name__ == '__main__':
 #     menu.run_server(debug=True)
