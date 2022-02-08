@@ -14,11 +14,12 @@ class userProject:
     def change_user(self, user_id):
         query = sql_query()
         self.user_id = user_id
-        first_name = query.get_user_first_name(user_id) 
-        self.menu.layout["Menu"]["title"].children = "Hello, {}!".format(first_name)
+        self.first_name = query.get_user_first_name(user_id) 
+        self.menu.layout["Menu"]["title"].children = "Hello, {}!".format(self.first_name)
 
     def __init__(self, server, router='/menu/'):
         self.user_id = None
+        self.first_name = None;
         SIDEBAR_STYLE = {
             'position': 'fixed',
             'top': 0,
@@ -72,17 +73,18 @@ class userProject:
                         "Select your favourite project 😊", className="lead"
                     ),
                     dbc.Nav(
-                        [
-                            dbc.NavLink("project 1", href="/project=4", active="exact"),
-                            dbc.NavLink("project 2", href="/project=2", active="exact"),
-                            dbc.NavLink("project 3", href="/project=3", active="exact"),
-                        ],
-                        id = "project box", 
+                        dbc.DropdownMenu(
+                            label = "project 1", 
+                            children = [
+                                dbc.Button("run 1", color="primary", className="me-1"), 
+                                dbc.Button("run 2", color="primary", className="me-1"), 
+                            ],
+                        ),
                         vertical=True,
                         pills=True,
-                    ),
-
-                ]
+                    ), 
+                ], 
+                id = "user box", 
             ),
             id="Menu",
             is_open=False,
@@ -91,7 +93,6 @@ class userProject:
         menu.layout = html.Div([navbar, sidebar])
 
         self.menu = menu
-        # session['user_info']
         @menu.callback(
             Output("navbar-collapse", "is_open"),
             [Input("navbar-toggler", "n_clicks")],
@@ -113,7 +114,7 @@ class userProject:
             return is_open
 
         @menu.callback(
-            Output("project box", "children"), 
+            Output("user box", "children"), 
             Input("title", "children"), 
         )
         def toggle_Project_Nav(text):
@@ -121,9 +122,48 @@ class userProject:
             projects_name = query.get_projects_name_list(self.user_id)
             projects_id = query.get_projects_id_list(self.user_id)
             assert(len(projects_id) == len(projects_name))
-            ret = [
-                dbc.NavLink("{}".format(projects_name[i]), href = "/project={}".format(projects_id[i]), active = "exact") for i in range(len(projects_id))
-            ]
+            runs_name = []
+            runs_id = []
+            for project_id in projects_id:
+                ls1 = query.get_runs_name_list(project_id)
+                ls2 = query.get_runs_id_list(project_id)
+                runs_name.append(ls1)
+                runs_id.append(ls2)
+
+            ret =  [
+                        html.H2("Hello, {}!".format(self.first_name), id = "title", className="display-5"),
+                        html.Hr(),
+                        html.P(
+                            "Select your favourite project 😊", className="lead"
+                        ),
+                ]
+            nav = []
+            for i in range(len(projects_id)):
+                if len(runs_id[i]) == 0:
+                    nav.append(
+                            dbc.NavLink("{}".format(projects_name[i]), active = "exact", style = {"padding-left": "12px"})
+                    )
+                else:
+                    nav.append(
+                            dbc.DropdownMenu(
+                                label = "{}".format(projects_name[i]), 
+                                toggle_style={
+                                    "background": "transparent",
+                                    "color": "#0d6efd", 
+                                    "display": "block", 
+                                    "border-color": "transparent", 
+                                    "border-left": "5px", 
+                                    },
+                                children = [
+                                    dbc.DropdownMenuItem("{}".format(runs_name[i][j])) for j in range(len(runs_id[i]))
+                                ],
+                            )
+                    )
+            ret.append(dbc.Nav(
+                    nav, 
+                    vertical=True,
+                    pills=True,
+                ))
             return ret
              
     
