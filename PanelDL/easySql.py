@@ -171,14 +171,14 @@ class sql_query(mysqlConnect):
             return None
         return results[0]["project_id"] if len(results) != 0 else self.enroll_project(user_id, project_name)
 
-    def enroll_run(self, user_id: int, project_id: int, run_name: str, config: str = "NULL"):
+    def enroll_run(self, user_id: int, project_id: int, run_name: str, config: dict = {}):
         """
         注册一项新的run
         改动enroll_run与run两张表
         @param user_id:
         @param project_id:
         @param run_name:
-        @param config:
+        @param config: dict类型！
         @return: run_id / None(fail)
         """
         run_id = self.get_available("run_id")
@@ -191,9 +191,13 @@ class sql_query(mysqlConnect):
                                                                                                                  json.dumps(config),
                                                                                                                  "RUNNING",
                                                                                                                  datetime.datetime.now())
-        print(sql)
+        #print(sql)
         success2, results = self.query(sql)
-        success = success1 & success2
+        sql = "UPDATE project SET last_activate_date = \'{}\' WHERE project_id = {}".format(datetime.datetime.now(),project_id)
+        #print(sql)
+        success3 , results = self.query(sql)
+        success = (success1 & success2 & success3)
+        #print(success1, success2, success3)
         if not success:
             print("enroll run error!")
             return None

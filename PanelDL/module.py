@@ -46,4 +46,7 @@ class PanelDL():
 
 
 if __name__ == '__main__':
-    a = {"a":1}
+    a = {"test":123}
+    PD = PanelDL()
+    PD.login("root","root")
+    PD.init(project="test",config=a,run_name="test_for_last_activate_date")
