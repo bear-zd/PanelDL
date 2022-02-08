@@ -90,6 +90,21 @@ class sql_query(mysqlConnect):
             # print("return run_id:")
         return ret
 
+    def get_runs_name_list(self, project_id: int):
+        """
+        获取用户的所有run_name
+        @param project_id: project_id
+        @return: run_name list / None(失败)
+        """
+        sql = "SELECT run_name FROM enroll_run WHERE project_id = {}".format(project_id)
+        success, results = self.select(sql)
+        if success == False:
+            return None
+        ret = []
+        for dict in results:
+            ret.append(dict['run_name'])
+        return ret
+
     def get_log(self, run_id: int):
         """
         获取某次run的所有log信息
