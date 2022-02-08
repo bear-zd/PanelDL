@@ -31,6 +31,7 @@ def login():
     user_id = query.get_user_id(user, pwd)
     if user_id != None:
         session['user_info'] = user_id
+        menu.change_user(user_id)
         return redirect('/menu')
     else:
         return render_template('login.html', msg='用户名或密码输入错误')

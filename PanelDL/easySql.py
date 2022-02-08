@@ -14,7 +14,7 @@ class sql_query(mysqlConnect):
         @return: 返回用户的user_id / None(出现多用户或查询不到)
         """
         sql = "SELECT user_id FROM user WHERE email = \'{}\' and password = \'{}\'".format(email, password)
-        print(sql)
+        # print(sql)
         success, results = self.select(sql)
         try:
             if success == True:
@@ -27,20 +27,50 @@ class sql_query(mysqlConnect):
         # print("return user_id:")
         return results[0]['user_id']
 
+    def get_user_first_name(self, user_id: int):
+        """
+        @param user_id: user_id
+        @return: 返回用户的first_name
+        """
+        sql = "SELECT first_name FROM user WHERE user_id = \'{}\'".format(user_id)
+        success, results = self.select(sql)
+        try:
+            if success == True:
+                assert (len(results) == 1)
+            else:
+                return None
+        except:
+            return None
+        return results[0]['first_name']
+
     def get_projects_id_list(self, user_id: int):
         """
         获取用户的所有project_id
         @param user_id: user_id
         @return: project_id list / None(失败)
         """
-        sql = "SELECT project_id FROM enroll_project WHERE user_id = {}".format(str(user_id))
+        sql = "SELECT project_id FROM enroll_project WHERE user_id = {}".format(user_id)
         success, results = self.select(sql)
         if success == False:
             return None
         ret = []
         for dict in results:
             ret.append(dict['project_id'])
-            # print("return project_id:")
+        return ret
+
+    def get_projects_name_list(self, user_id: int):
+        """
+        获取用户的所有project_name
+        @param user_id: user_id
+        @return: project_name list / None(失败)
+        """
+        sql = "SELECT project_name FROM enroll_project WHERE user_id = {}".format(user_id)
+        success, results = self.select(sql)
+        if success == False:
+            return None
+        ret = []
+        for dict in results:
+            ret.append(dict['project_name'])
         return ret
 
     def get_runs_id_list(self, project_id: int):
@@ -49,7 +79,7 @@ class sql_query(mysqlConnect):
         @param project_id: project_id
         @return: run_id list / None(失败)
         """
-        sql = "SELECT run_id FROM enroll_run WHERE project_id = {}".format(str(project_id))
+        sql = "SELECT run_id FROM enroll_run WHERE project_id = {}".format(project_id)
         success, results = self.select(sql)
         if success == False:
             return None
@@ -65,7 +95,7 @@ class sql_query(mysqlConnect):
         @param run_id: run_id
         @return: defaultdict(list) / None(没有相应run_id)
         """
-        sql = "SELECT `key`, value FROM log_data WHERE run_id = {}".format(str(run_id))
+        sql = "SELECT `key`, value FROM log_data WHERE run_id = {}".format(run_id)
         success, results = self.select(sql)
         if success == False:
             return None
