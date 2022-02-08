@@ -4,6 +4,7 @@ import pymysql
 from collections import defaultdict
 from utils.sqlApi import mysqlConnect
 import datetime
+import json
 
 
 class sql_query(mysqlConnect):
@@ -170,11 +171,12 @@ class sql_query(mysqlConnect):
             user_id, project_id, datetime.datetime.now(), run_name, run_id)
         success1, results = self.query(sql)
 
-        sql = "INSERT INTO run(run_id,project_id,config,state,start_time) VALUES({},{},{},\'{}\',\'{}\')".format(run_id,
+        sql = "INSERT INTO run(run_id,project_id,config,state,start_time) VALUES({},{},\'{}\',\'{}\',\'{}\')".format(run_id,
                                                                                                                  project_id,
-                                                                                                                 config,
+                                                                                                                 json.dumps(config),
                                                                                                                  "RUNNING",
                                                                                                                  datetime.datetime.now())
+        print(sql)
         success2, results = self.query(sql)
         success = success1 & success2
         if not success:
@@ -183,11 +185,17 @@ class sql_query(mysqlConnect):
         return run_id
 
     def get_step(self, run_id):
+        """
+        获取当前run的step记录次数
+        @param run_id:
+        @return: step
+        """
         sql = 'SELECT step FROM run WHERE run_id = {}'.format(str(run_id))
         success1, result = self.select(sql)
         sql = 'UPDATE run SET step = step + 1 where run_id = {}'.format(str(run_id))
         success2, result2 = self.query(sql)
         return result[0]['step']
+
 
     def log(self, run_id: int, dic: dict):
         step = self.get_step(run_id)
@@ -200,5 +208,30 @@ class sql_query(mysqlConnect):
             if not success:
                 print("log error!")
 
+    def end_run(self,project_id:int,run_id:int):
+        """
+        作为module的析构函数使用
+        记录duration
+        @param project_id: project_id
+        @param run_id: run_id
+        @return:
+        """
+        sql = 'UPDATE run SET state = "END" WHERE project_id = {} AND run_id = {}'.format(project_id, run_id)
+        success1, result1 = self.query(sql)
+        sql = 'SELECT start_time FROM run WHERE project_id = {} AND run_id = {}'.format(project_id, run_id)
+        success2, result2 = self.select(sql)
+        time_start = result2[0]["start_time"]
+        duration = datetime.datetime.now() - time_start
+        sql = 'UPDATE run SET duration = \'{}\' WHERE project_id = {} AND run_id = {}'.format(duration, project_id,
+                                                                                              run_id)
+        # print(sql)
+        success3, result3 = self.query(sql)
+        success = (success1 & success2 & success3)
+        if not success:
+            print("del error!")
 
 
+if __name__ == '__main__':
+    query = sql_query()
+    config = {"test":100}
+    query.enroll_run(user_id=-1,project_id=27,run_name="test_config_dump_4",config=config)

@@ -10,6 +10,11 @@ class PanelDL():
         self.sql = sql_query()
         self.ok = False
 
+    def __del__(self):
+        if self.project_id == None or self.run_id == None:
+            return
+        self.sql.end_run(project_id=self.project_id,run_id=self.run_id)
+
     def login(self,email,password):
         """
         @param email: 用户的邮箱
@@ -41,8 +46,4 @@ class PanelDL():
 
 
 if __name__ == '__main__':
-    PD = PanelDL()
-    PD.login("root","root")
-    PD.init(run_name="TEST3")
-    PD.log({"train_acc":0.94,"val_acc":0.23})
-    PD.log({"train_acc": 0.94, "val_acc": 0.23})
+    a = {"a":1}
