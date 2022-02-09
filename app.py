@@ -3,12 +3,21 @@ import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 from flask import session
 from PanelDL.easySql import sql_query
-
+import plotly.graph_objs as go
+from pprint import pprint
 import plotly.express as px
 import pandas as pd
 import threading
+from pandas import DataFrame
+from plotly.subplots import make_subplots
+import plotly.graph_objs as go
+import math
 
 change_user_event = threading.Event()
+
+def dbg(a:str):
+    print("\033[43m {}\033[0m".format(a))
+
 
 class userProject:
     def change_user(self, user_id):
@@ -174,7 +183,8 @@ class userProject:
                     pills=True,
                 ))
             return ret
-             
+
+
         @menu.callback(
             Output("graphbar", "children"), 
             Output("open-Menu", "n_clicks"),
@@ -184,20 +194,42 @@ class userProject:
         def switch_page(pathname, n_clicks):
             if("/run_id=" in pathname):
                 run_id = int(pathname[8:])
-                print(run_id)
+                print("run_id",run_id)
                 query = sql_query()
                 user_of_run = query.get_user_id_by_run_id(run_id)
-                print(user_of_run)
+                print("user_of_run")
                 if (user_of_run == None) | (user_of_run != self.user_id):
                     return [], n_clicks
         ############################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         ############################################################################
-
                 ret = []
-                # ret.append(html.H2("{}".format(pathname)))
-                return [html.H2("{}".format(pathname))], n_clicks + 1
-                # return ret, n_clicks + 1
+                fig_list = []
+                data = query.get_log(run_id)
+                data_df = DataFrame(data)
+                data_df["step"] = data_df.index
+                fig_list = []
+                key_list = []
+                for key in data.keys():
+                    if key == "step":
+                        continue
+                    fig = go.Scatter(x=data_df["step"].values,y=data_df[key].values)
+                    print(data_df["step"],data_df[key])
+                    fig_list.append(fig)
+                    key_list.append(key)
+
+                fig = make_subplots(rows=math.ceil(len(fig_list) / 3), cols=3, subplot_titles=key_list)
+
+                for idx,sub_fig in enumerate(fig_list):
+                    x = (idx)//3 + 1
+                    y = (idx)%3 + 1
+                    print(x,y)
+                    fig.append_trace(sub_fig,x,y)
+
+                dcc_fig = dcc.Graph(figure=fig)
+                ret.append(dcc.Graph(figure=fig))
+                ret.append(html.H2("test"))
+                return ret, n_clicks + 1
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         ############################################################################
@@ -206,5 +238,13 @@ class userProject:
 
             return [], n_clicks
 
-# if __name__ == '__main__':
-#     menu.run_server(debug=True)
+        # @menu.callback(
+        #     Output("graph", "figure"),
+        #     Input("slider-width", "value")
+        # )
+        # def customize_width(left_width):
+        #     fig = make_subplots(rows=1, cols=2,column_widths=[left_width, 1 - left_width])
+        #     fig.add_trace(go.Scatter(x=[1, 2, 3], y=[4, 5, 6]),row=1, col=1)
+        #     fig.add_trace(go.Scatter(x=[20, 30, 40], y=[50, 60, 70]),row=1, col=2)
+        #
+        #     return fig

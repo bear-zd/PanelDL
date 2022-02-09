@@ -262,6 +262,9 @@ class sql_query(mysqlConnect):
             return None
         return results[0]['user_id']
 
+    def get_config_by_run_id(self, run_id : int):
+        sql = 'SELECT project_name , last_activate_date FROM project WHERE '
+
 # if __name__ == '__main__':
 #     query = sql_query()
 #     config = {"test":100}
