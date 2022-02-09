@@ -323,11 +323,33 @@ class sql_query(mysqlConnect):
         success , result = self.select(sql)
         if not success:
             print("error!")
-        dic = { x["run_id"]:x["run_name"] for x in result}
+        dic = { x["run_id"]:x["run_name"] for x in result }
         return dic
+
+    def get_unique_key(self,project_id:int):
+        """
+        对应project_id获取log_data的所有的key
+        @param project_id: int
+        @return: unique list ：包含所有key字段
+        """
+        run_id_list = self.get_runs_id_list(project_id)
+        run_id_list_len = len(run_id_list)
+        if run_id_list_len == 0:
+            return []
+        elif run_id_list_len ==1:
+            sql = 'SELECT DISTINCT `key` FROM log_data WHERE run_id = {}'.format(run_id_list[0])
+        else:
+            sql = 'SELECT DISTINCT `key` FROM log_data WHERE run_id in {}'.format(tuple(run_id_list))
+        #print(sql)
+        success , result = self.select(sql)
+        if not success:
+            print("error!")
+        result = [ x["key"] for x in result]
+        #print(result)
+        return result
 
 
 if __name__ == '__main__':
     query = sql_query()
-    query.get_run_id_to_name_dict()
+    query.get_unique_key(26)
 

@@ -33,6 +33,7 @@ class userProject:
         self.df = None
         self.run_id_to_name_dict = None
         self.run_name_to_id_dict = None
+        self.figure = "figure"
         self.first_name = None;
         SIDEBAR_STYLE = {
             'position': 'fixed',
@@ -256,10 +257,10 @@ class userProject:
                     ret.append(dcc.Graph(figure=fig))
 
                 #绘制总图部分
-                #run_id_all = query.get_runs_id_list( project_id = self.project_id )
+
+                key_total = []
                 run_name_all = query.get_runs_name_list( project_id = self.project_id)
                 run_name_all = np.unique(run_name_all)
-
                 data = query.get_all_log_data(project_id=self.project_id,key="val_acc")
                 print("data:",data)
                 if len(data)!=0:
@@ -284,7 +285,8 @@ class userProject:
             return [], n_clicks
 
         @menu.callback(
-            Output("line-chart","figure"),
+            # Output("line-chart","figure"),
+            Output("line-chart", self.figure),
             [Input("check_list", "value")]
         )
         def update_line_chart(run_names):
@@ -294,9 +296,6 @@ class userProject:
                 run_ids = [self.run_name_to_id_dict[name] for name in run_names]
             except:
                 run_ids = []
-            # if type(run_names) is 'NoneType':
-            #     run_names = []
-            # run_ids = [self.run_name_to_id_dict[name] for name in run_names]
             mask = self.df.run_id.isin(run_ids)
             fig = px.line(self.df[mask], x="step", y="value", color='run_name')
             return fig
