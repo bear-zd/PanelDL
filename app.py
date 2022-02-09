@@ -1,18 +1,12 @@
 from dash import Dash, html, dcc
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
-from flask import session
 from PanelDL.easySql import sql_query
-import plotly.graph_objs as go
-from pprint import pprint
 import plotly.express as px
 import pandas as pd
 import threading
 from pandas import DataFrame
 import numpy as np
-from plotly.subplots import make_subplots
-import plotly.graph_objs as go
-import math
 
 change_user_event = threading.Event()
 
