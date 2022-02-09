@@ -181,6 +181,10 @@ class sql_query(mysqlConnect):
         @param config:
         @return: run_id / None(fail)
         """
+        sql = "SELECT run_id FROM enroll_run WHERE project_id = {} AND run_name = {}".format(project_id, run_name)
+        success, result = self.query(sql)
+        assert((result == 0) | (result is None))
+
         run_id = self.get_available("run_id")
         sql = "INSERT INTO enroll_run(user_id,project_id,run_create_date,run_name,run_id) VALUES({},{},\'{}\',\'{}\',{})".format(
             user_id, project_id, datetime.datetime.now(), run_name, run_id)
@@ -314,12 +318,12 @@ class sql_query(mysqlConnect):
         #     print("error!")
         # return result
 
-    def get_run_id_to_name_dict(self):
+    def get_run_id_to_name_dict(self, project_id:int):
         """
-        获取从run_id到run_name的dict映射
+        同一个project下获取从run_id到run_name的dict映射
         @return:
         """
-        sql = 'SELECT run_id,run_name FROM enroll_run'
+        sql = 'SELECT run_id,run_name FROM enroll_run WHERE project_id = {}'.format(project_id)
         success , result = self.select(sql)
         if not success:
             print("error!")

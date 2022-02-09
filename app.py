@@ -33,8 +33,9 @@ class userProject:
         self.df = None
         self.run_id_to_name_dict = None
         self.run_name_to_id_dict = None
-        self.figure = "figure"
-        self.first_name = None;
+        self.first_name = None
+        self.key_total = None
+        self.charts = None
         SIDEBAR_STYLE = {
             'position': 'fixed',
             'top': 0,
@@ -132,6 +133,7 @@ class userProject:
             [State("Menu", "is_open")],
         )
         def toggle_offcanvas(n1, is_open):
+            print("click menu")
             if n1:
                 return not is_open
             return is_open
@@ -197,6 +199,7 @@ class userProject:
             State("open-Menu", "n_clicks"),
         )
         def switch_page(pathname, n_clicks):
+            print("change_url")
             if("/run_id=" in pathname):
                 run_id = int(pathname[8:])
                 print("run_id",run_id)
@@ -258,20 +261,34 @@ class userProject:
 
                 #绘制总图部分
 
-                key_total = []
+                key_total = query.get_unique_key(self.project_id)
+                self.key_total = key_total
                 run_name_all = query.get_runs_name_list( project_id = self.project_id)
                 run_name_all = np.unique(run_name_all)
+
+
+                check_list = dcc.Checklist(id="check_list", options=[{"label": x, "value": x} for x in run_name_all],labelStyle={'display': 'inline-block'})
+                ret.append(check_list)
+
+                charts = []
+
                 data = query.get_all_log_data(project_id=self.project_id,key="val_acc")
-                print("data:",data)
+                # print("data:",data)
                 if len(data)!=0:
                     self.df = DataFrame(data)
-                    self.run_id_to_name_dict = query.get_run_id_to_name_dict()
+                    self.run_id_to_name_dict = query.get_run_id_to_name_dict(project_id=self.project_id)
                     self.run_name_to_id_dict = {value: key for key, value in self.run_id_to_name_dict.items()}
                     self.df["run_name"] = [self.run_id_to_name_dict[x] for x in self.df["run_id"]]
-                    print(self.df)
+                    # print(self.df)
 
-                    check_list = dcc.Checklist(id="check_list",options=[ {"label":x,"value":x} for x in run_name_all],labelStyle={'display': 'inline-block'})
-                    ret.append(html.Div([check_list,dcc.Graph(id="line-chart")]))
+                    # print(self.key_total)
+                    for idx, key in enumerate(self.key_total):
+                        charts.append(dcc.Graph(id="line-chart-" + key))
+                    self.charts = charts
+                    charts_div = html.Div(children = charts, id = "charts")
+
+                    ret.append(charts_div)
+                    # ret.append(html.Div([check_list,dcc.Graph(id="line-chart")]))
                 ret.append(html.H5("END"))
 
                 return ret, n_clicks + 1
@@ -284,18 +301,31 @@ class userProject:
 
             return [], n_clicks
 
+        ############################################################################
+        # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+        ############################################################################
         @menu.callback(
-            # Output("line-chart","figure"),
-            Output("line-chart", self.figure),
-            [Input("check_list", "value")]
+            Output("charts", "children"),
+            Input("check_list", "value")
         )
         def update_line_chart(run_names):
-            query = sql_query()
             print("run_names",run_names)
-            try:
-                run_ids = [self.run_name_to_id_dict[name] for name in run_names]
-            except:
-                run_ids = []
-            mask = self.df.run_id.isin(run_ids)
-            fig = px.line(self.df[mask], x="step", y="value", color='run_name')
-            return fig
+            if run_names is None:
+                print("empty")
+                return html.Div(children = [self.charts], id = "charts")
+            i = 0
+            print(self.key_total)
+            for idx, key in enumerate(self.key_total):
+                try:
+                    run_ids = [self.run_name_to_id_dict[name] for name in run_names]
+                except:
+                    run_ids = []
+                mask = self.df.run_id.isin(run_ids)
+                fig = px.line(self.df[mask], x="step", y="value", color='run_name')
+                self.charts[i].figure = fig 
+                i += 1
+            return html.Div(children = [self.charts], id = "charts")
+        # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+        ############################################################################
+        #                             END OF YOUR CODE                             #
+        ############################################################################
