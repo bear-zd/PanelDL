@@ -266,8 +266,7 @@ class userProject:
                 run_name_all = query.get_runs_name_list( project_id = self.project_id)
                 run_name_all = np.unique(run_name_all)
 
-
-                check_list = dcc.Checklist(id="check_list", options=[{"label": x, "value": x} for x in run_name_all],labelStyle={'display': 'inline-block'})
+                check_list = dcc.Checklist(id="check_list", options=[{"label": x, "value": x} for x in run_name_all],labelStyle={'display': 'inline-block'},value=run_name_all)
                 ret.append(check_list)
 
                 charts = []
@@ -281,14 +280,15 @@ class userProject:
                     self.df["run_name"] = [self.run_id_to_name_dict[x] for x in self.df["run_id"]]
                     # print(self.df)
 
-                    # print(self.key_total)
-                    for idx, key in enumerate(self.key_total):
-                        charts.append(dcc.Graph(id="line-chart-" + key))
-                    self.charts = charts
+                    # # print(self.key_total)
+                    # for idx, key in enumerate(self.key_total):
+                    #     charts.append(dcc.Graph(id="line-chart-" + key))
+                    # self.charts = charts
                     charts_div = html.Div(children = charts, id = "charts")
-
                     ret.append(charts_div)
-                    # ret.append(html.Div([check_list,dcc.Graph(id="line-chart")]))
+
+
+                #     # ret.append(html.Div([check_list,dcc.Graph(id="line-chart")]))
                 ret.append(html.H5("END"))
 
                 return ret, n_clicks + 1
@@ -310,9 +310,11 @@ class userProject:
         )
         def update_line_chart(run_names):
             print("run_names",run_names)
+            local_charts = []
             if run_names is None:
                 print("empty")
-                return html.Div(children = [self.charts], id = "charts")
+                #return html.Div(children = [None], id = "charts")
+                return [None]
             i = 0
             print(self.key_total)
             for idx, key in enumerate(self.key_total):
@@ -320,11 +322,16 @@ class userProject:
                     run_ids = [self.run_name_to_id_dict[name] for name in run_names]
                 except:
                     run_ids = []
-                mask = self.df.run_id.isin(run_ids)
+                mask1 = self.df.run_id.isin(run_ids)
+                mask2 = self.df.key.isin([key])
+                mask = mask1&mask2
+
                 fig = px.line(self.df[mask], x="step", y="value", color='run_name')
-                self.charts[i].figure = fig 
+                local_charts.append(dcc.Graph(figure=fig))
+                #self.charts[i].figure = fig
                 i += 1
-            return html.Div(children = [self.charts], id = "charts")
+            #return html.Div(children = [self.charts], id = "charts")
+            return local_charts
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         ############################################################################
         #                             END OF YOUR CODE                             #

@@ -90,39 +90,37 @@
 # # print(df)
 # # fig = px.parallel_categories(df, color="size", color_continuous_scale=px.colors.sequential.Inferno)
 # # fig.show()
-#
-# import dash
-# import dash_core_components as dcc
-# import dash_html_components as html
-# from dash.dependencies import Input, Output
-# import plotly.express as px
-#
-# df = px.data.gapminder()
-# print(df["lifeExp"])
-# all_continents = df.continent.unique()
-# print(all_continents)
-#
-# app = dash.Dash(__name__)
-#
-# app.layout = html.Div([
-#     dcc.Checklist(
-#         id="checklist",
-#         options=[{"label": x, "value": x}
-#                  for x in all_continents],
-#         value=all_continents[3:],
-#         labelStyle={'display': 'inline-block'}
-#     ),
-#     dcc.Graph(id="line-chart"),
-# ])
-#
-# @app.callback(
-#     Output("line-chart", "figure"),
-#     [Input("checklist", "value")])
-# def update_line_chart(continents):
-#     mask = df.continent.isin(continents)
-#     fig = px.line(df[mask],x="year", y="lifeExp", color='country')
-#     return fig
-#
-# app.run_server(debug=True)
 
-print(tuple())
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
+from dash.dependencies import Input, Output
+import plotly.express as px
+
+df = px.data.gapminder()
+print(df["lifeExp"])
+all_continents = df.continent.unique()
+print(all_continents)
+
+app = dash.Dash(__name__)
+
+app.layout = html.Div([
+    dcc.Checklist(
+        id="checklist",
+        options=[{"label": x, "value": x}
+                 for x in all_continents],
+        value=all_continents[3:],
+        labelStyle={'display': 'inline-block'}
+    ),
+    html.Div(children=[dcc.Graph(id="line-chart"),dcc.Graph(id="line-chart-1")],id="LINE")
+])
+
+@app.callback(
+    Output("LINE", "children"),
+    [Input("checklist", "value")])
+def update_line_chart(continents):
+    mask = df.continent.isin(continents)
+    fig = px.line(df[mask],x="year", y="lifeExp", color='country')
+    return [dcc.Graph(figure=fig),dcc.Graph(figure=fig)]
+
+app.run_server(debug=True)
