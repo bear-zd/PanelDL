@@ -278,7 +278,7 @@ class sql_query(mysqlConnect):
             print("error!")
         return CONFIG
 
-    def get_all_log_data(self,project_id : int,key : str=""):
+    def get_all_log_data(self,project_id : int):
         """
         三种情况，查不到，查到一个，查到许多
         @param project_id:
@@ -290,15 +290,15 @@ class sql_query(mysqlConnect):
         if list_len == 0:
             return []
         elif list_len == 1:
-            sql = 'SELECT * FROM log_data WHERE run_id = {} AND `KEY` =  \'{}\''.format(run_id_list[0],key)
+            sql = 'SELECT * FROM log_data WHERE run_id = {}'.format(run_id_list[0])
             success1 , result = self.select(sql)
         else:
             run_id_list = tuple(run_id_list)
-            sql = 'SELECT * FROM log_data WHERE run_id in {} AND `key` = \'{}\''.format(run_id_list, key)
+            sql = 'SELECT * FROM log_data WHERE run_id in {}'.format(run_id_list)
             success1, result = self.select(sql)
         if not success1:
             print("error!")
-        print("result:",result)
+        #print("result:",result)
         return result
         # print("run_id_lisy",run_id_list)
         # print(type(run_id_list))

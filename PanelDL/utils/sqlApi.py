@@ -56,5 +56,3 @@ class mysqlConnect(object):
         self.__reConn()
         self.cursor.close()
         self.connect.close()
-
-

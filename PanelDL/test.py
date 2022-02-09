@@ -121,6 +121,6 @@ app.layout = html.Div([
 def update_line_chart(continents):
     mask = df.continent.isin(continents)
     fig = px.line(df[mask],x="year", y="lifeExp", color='country')
-    return [dcc.Graph(figure=fig),dcc.Graph(figure=fig)]
+    return [dcc.Graph(figure=fig),dcc.Graph(figure=fig),html.H2("END!")]
 
 app.run_server(debug=True)

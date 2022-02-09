@@ -271,7 +271,7 @@ class userProject:
 
                 charts = []
 
-                data = query.get_all_log_data(project_id=self.project_id,key="val_acc")
+                data = query.get_all_log_data(project_id=self.project_id)
                 # print("data:",data)
                 if len(data)!=0:
                     self.df = DataFrame(data)
@@ -315,8 +315,9 @@ class userProject:
                 print("empty")
                 #return html.Div(children = [None], id = "charts")
                 return [None]
-            i = 0
+            # i = 0
             print(self.key_total)
+            print(self.df)
             for idx, key in enumerate(self.key_total):
                 try:
                     run_ids = [self.run_name_to_id_dict[name] for name in run_names]
@@ -326,10 +327,12 @@ class userProject:
                 mask2 = self.df.key.isin([key])
                 mask = mask1&mask2
 
+                title = html.Hr(key)
                 fig = px.line(self.df[mask], x="step", y="value", color='run_name')
+                local_charts.append(html.H3(key))
                 local_charts.append(dcc.Graph(figure=fig))
                 #self.charts[i].figure = fig
-                i += 1
+                # i += 1
             #return html.Div(children = [self.charts], id = "charts")
             return local_charts
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
