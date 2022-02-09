@@ -268,13 +268,36 @@ class sql_query(mysqlConnect):
         project_id = result1[0]["project_id"]
         sql = 'SELECT project_name , last_activate_date , privacy FROM project WHERE project_id = {}'.format(project_id)
         success2 , result2 = self.select(sql)
-        CONFIG = {**result1[0],**result2[0]}
+        CONFIG = {**result1[0],**result2[0],"run_id":run_id}
         success = success1 & success2
         if not success:
             print("error!")
-        print(CONFIG)
+        #print(CONFIG)
         return CONFIG
+
+    def get_all_log_data(self,project_id : int,key : str=""):
+        run_id_list = self.get_runs_id_list(project_id)
+        run_id_list = tuple(run_id_list)
+        sql = 'SELECT * FROM log_data WHERE run_id in {} AND `key` = \'{}\''.format(run_id_list,key)
+        success1 , result = self.select(sql)
+        if not success1:
+            print("error!")
+        return result
+
+    def get_run_id_to_name_dict(self):
+        """
+        获取从run_id到run_name的dict映射
+        @return:
+        """
+        sql = 'SELECT run_id,run_name FROM enroll_run'
+        success , result = self.select(sql)
+        if not success:
+            print("error!")
+        dic = { x["run_id"]:x["run_name"] for x in result}
+        return dic
+
 
 if __name__ == '__main__':
     query = sql_query()
-    query.get_config_by_run_id(133)
+    query.get_run_id_to_name_dict()
+

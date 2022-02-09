@@ -74,12 +74,53 @@
 # table = dbc.Table.from_dataframe(df, striped=True, bordered=True, hover=True)
 
 
-import dash_bootstrap_components as dbc
-import pandas as pd
-
-config = {'config': None, 'project_id': 25, 'project_name': 'PetFinder', 'last_activate_date': None, 'privacy': 'privacy'}
-# df = pd.DataFrame(config,index=[0])
+# import dash_bootstrap_components as dbc
+# import pandas as pd
+#
+# config = {'config': None, 'project_id': 25, 'project_name': 'PetFinder', 'last_activate_date': None, 'privacy': 'privacy'}
+# # df = pd.DataFrame(config,index=[0])
+# # print(df)
+# config = [(key,value) for key,value in config.items()]
+# df = pd.DataFrame(config,columns=["Name","Value"])
+# table = dbc.Table.from_dataframe(df, striped=True, bordered=True, hover=True)
+#
+#
+# import plotly.express as px
+# df = px.data.tips()
 # print(df)
-config = [(key,value) for key,value in config.items()]
-df = pd.DataFrame(config,columns=["Name","Value"])
-table = dbc.Table.from_dataframe(df, striped=True, bordered=True, hover=True)
+# fig = px.parallel_categories(df, color="size", color_continuous_scale=px.colors.sequential.Inferno)
+# fig.show()
+
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
+from dash.dependencies import Input, Output
+import plotly.express as px
+
+df = px.data.gapminder()
+print(df["lifeExp"])
+all_continents = df.continent.unique()
+print(all_continents)
+
+app = dash.Dash(__name__)
+
+app.layout = html.Div([
+    dcc.Checklist(
+        id="checklist",
+        options=[{"label": x, "value": x}
+                 for x in all_continents],
+        value=all_continents[3:],
+        labelStyle={'display': 'inline-block'}
+    ),
+    dcc.Graph(id="line-chart"),
+])
+
+@app.callback(
+    Output("line-chart", "figure"),
+    [Input("checklist", "value")])
+def update_line_chart(continents):
+    mask = df.continent.isin(continents)
+    fig = px.line(df[mask],x="year", y="lifeExp", color='country')
+    return fig
+
+app.run_server(debug=True)

@@ -9,6 +9,7 @@ import plotly.express as px
 import pandas as pd
 import threading
 from pandas import DataFrame
+import numpy as np
 from plotly.subplots import make_subplots
 import plotly.graph_objs as go
 import math
@@ -28,6 +29,10 @@ class userProject:
 
     def __init__(self, server, router='/menu/'):
         self.user_id = None
+        self.project_id = None
+        self.df = None
+        self.run_id_to_name_dict = None
+        self.run_name_to_id_dict = None
         self.first_name = None;
         SIDEBAR_STYLE = {
             'position': 'fixed',
@@ -233,12 +238,13 @@ class userProject:
                 ret = []
 
                 #CONFIG部分
-                config = query.get_config_by_run_id(run_id)
-                config = [(key, value) for key, value in config.items() if value is not None]
+                config_dict = query.get_config_by_run_id(run_id)
+                self.project_id = config_dict["project_id"]
+                config = [(key, value) for key, value in config_dict.items() if value is not None]
                 df = pd.DataFrame(config, columns=["Name", "Value"])
                 table = dbc.Table.from_dataframe(df, striped=True, bordered=True, hover=True)
                 ret.append(table)
-                print(config)
+                #print(config)
 
                 #绘图部分
                 data = query.get_log(run_id)
@@ -246,13 +252,28 @@ class userProject:
                 data_df["step"] = data_df.index
                 for key in data.keys():
                     title = html.H2(key)
-                    print(key)
                     fig = px.line(data_df,x="step",y=key)
                     ret.append(title)
                     ret.append(dcc.Graph(figure=fig))
 
-                ret.append(html.H2("test"))
+                #绘制总图部分
+                #run_id_all = query.get_runs_id_list( project_id = self.project_id )
+                run_name_all = query.get_runs_name_list( project_id = self.project_id)
+                run_name_all = np.unique(run_name_all)
+
+                data = query.get_all_log_data(project_id=self.project_id,key="val_acc")
+                self.df = DataFrame(data)
+                self.run_id_to_name_dict = query.get_run_id_to_name_dict()
+                self.run_name_to_id_dict = {value: key for key, value in self.run_id_to_name_dict.items()}
+                self.df["run_name"] = [self.run_id_to_name_dict[x] for x in self.df["run_id"]]
+                print(self.df)
+
+                check_list = dcc.Checklist(id="check_list",options=[ {"label":x,"value":x} for x in run_name_all],labelStyle={'display': 'inline-block'})
+                ret.append(html.Div([check_list,dcc.Graph(id="line-chart")]))
+                ret.append(html.H5("END"))
+
                 return ret, n_clicks + 1
+
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         ############################################################################
@@ -260,3 +281,16 @@ class userProject:
         ############################################################################
 
             return [], n_clicks
+
+        @menu.callback(
+            Output("line-chart","figure"),
+            [Input("check_list", "value")]
+        )
+        def update_line_chart(run_names):
+            query = sql_query()
+            if type(run_names) is 'NoneType':
+                run_names = []
+            run_ids = [self.run_name_to_id_dict[name] for name in run_names]
+            mask = self.df.run_id.isin(run_ids)
+            fig = px.line(self.df[mask], x="step", y="value", color='run_name')
+            return fig
