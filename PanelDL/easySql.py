@@ -272,17 +272,47 @@ class sql_query(mysqlConnect):
         success = success1 & success2
         if not success:
             print("error!")
-        #print(CONFIG)
         return CONFIG
 
     def get_all_log_data(self,project_id : int,key : str=""):
+        """
+        三种情况，查不到，查到一个，查到许多
+        @param project_id:
+        @param key:
+        @return:
+        """
         run_id_list = self.get_runs_id_list(project_id)
-        run_id_list = tuple(run_id_list)
-        sql = 'SELECT * FROM log_data WHERE run_id in {} AND `key` = \'{}\''.format(run_id_list,key)
-        success1 , result = self.select(sql)
+        list_len = len(run_id_list)
+        if list_len == 0:
+            return []
+        elif list_len == 1:
+            sql = 'SELECT * FROM log_data WHERE run_id = {} AND `KEY` =  \'{}\''.format(run_id_list[0],key)
+            success1 , result = self.select(sql)
+        else:
+            run_id_list = tuple(run_id_list)
+            sql = 'SELECT * FROM log_data WHERE run_id in {} AND `key` = \'{}\''.format(run_id_list, key)
+            success1, result = self.select(sql)
         if not success1:
             print("error!")
+        print("result:",result)
         return result
+        # print("run_id_lisy",run_id_list)
+        # print(type(run_id_list))
+        # print(tuple(run_id_list))
+        # if len(run_id_list)!=1:
+        #     print("a")
+        #     run_id_list = tuple(run_id_list)
+        # else:
+        #     print("b")
+        #     run_id_list = tuple([run_id_list[0]])
+        # #run_id_list = tuple(run_id_list) if len(run_id_list)!=1 else tuple(run_id_list[0])
+        # print("run_id_list",run_id_list)
+        # sql = 'SELECT * FROM log_data WHERE run_id in {} AND `key` = \'{}\''.format(run_id_list,key)
+        # print(sql)
+        # success1 , result = self.select(sql)
+        # if not success1:
+        #     print("error!")
+        # return result
 
     def get_run_id_to_name_dict(self):
         """

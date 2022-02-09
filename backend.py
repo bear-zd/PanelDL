@@ -61,4 +61,3 @@ app = DispatcherMiddleware(server, {
 })
 # session['secret_key'] = 'paneldlllldlenap'
 run_simple('0.0.0.0', 8080, app, use_reloader=True, use_debugger=True)
-# app.run('0.0.0.0', 8080, use_reloader=True, use_debugger=True)

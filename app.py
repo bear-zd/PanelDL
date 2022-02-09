@@ -105,8 +105,7 @@ class userProject:
             style=SIDEBAR_STYLE,
         )
 
-
-        graphbar = html.Div(id = "graphbar")
+        graphbar = html.Div(id="graphbar", style={"padding": "10%"})
 
         menu.layout = html.Div([
                 dcc.Location(id='url', refresh=False),
@@ -262,14 +261,16 @@ class userProject:
                 run_name_all = np.unique(run_name_all)
 
                 data = query.get_all_log_data(project_id=self.project_id,key="val_acc")
-                self.df = DataFrame(data)
-                self.run_id_to_name_dict = query.get_run_id_to_name_dict()
-                self.run_name_to_id_dict = {value: key for key, value in self.run_id_to_name_dict.items()}
-                self.df["run_name"] = [self.run_id_to_name_dict[x] for x in self.df["run_id"]]
-                print(self.df)
+                print("data:",data)
+                if len(data)!=0:
+                    self.df = DataFrame(data)
+                    self.run_id_to_name_dict = query.get_run_id_to_name_dict()
+                    self.run_name_to_id_dict = {value: key for key, value in self.run_id_to_name_dict.items()}
+                    self.df["run_name"] = [self.run_id_to_name_dict[x] for x in self.df["run_id"]]
+                    print(self.df)
 
-                check_list = dcc.Checklist(id="check_list",options=[ {"label":x,"value":x} for x in run_name_all],labelStyle={'display': 'inline-block'})
-                ret.append(html.Div([check_list,dcc.Graph(id="line-chart")]))
+                    check_list = dcc.Checklist(id="check_list",options=[ {"label":x,"value":x} for x in run_name_all],labelStyle={'display': 'inline-block'})
+                    ret.append(html.Div([check_list,dcc.Graph(id="line-chart")]))
                 ret.append(html.H5("END"))
 
                 return ret, n_clicks + 1
@@ -288,9 +289,14 @@ class userProject:
         )
         def update_line_chart(run_names):
             query = sql_query()
-            if type(run_names) is 'NoneType':
-                run_names = []
-            run_ids = [self.run_name_to_id_dict[name] for name in run_names]
+            print("run_names",run_names)
+            try:
+                run_ids = [self.run_name_to_id_dict[name] for name in run_names]
+            except:
+                run_ids = []
+            # if type(run_names) is 'NoneType':
+            #     run_names = []
+            # run_ids = [self.run_name_to_id_dict[name] for name in run_names]
             mask = self.df.run_id.isin(run_ids)
             fig = px.line(self.df[mask], x="step", y="value", color='run_name')
             return fig
