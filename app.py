@@ -203,31 +203,54 @@ class userProject:
         ############################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         ############################################################################
+
+                # 非堆砌版本图
+                # fig_list = []
+                # data = query.get_log(run_id)
+                # data_df = DataFrame(data)
+                # data_df["step"] = data_df.index
+                # fig_list = []
+                # key_list = []
+                # for key in data.keys():
+                #     if key == "step":
+                #         continue
+                #     fig = go.Scatter(x=data_df["step"].values,y=data_df[key].values)
+                #     print(data_df["step"],data_df[key])
+                #     fig_list.append(fig)
+                #     key_list.append(key)
+                #
+                # fig = make_subplots(rows=math.ceil(len(fig_list) / 3), cols=3, subplot_titles=key_list)
+                #
+                # for idx,sub_fig in enumerate(fig_list):
+                #     x = (idx)//3 + 1
+                #     y = (idx)%3 + 1
+                #     print(x,y)
+                #     fig.append_trace(sub_fig,x,y)
+                #
+                # dcc_fig = dcc.Graph(figure=fig)
+                # ret.append(dcc.Graph(figure=fig))
+
                 ret = []
-                fig_list = []
+
+                #CONFIG部分
+                config = query.get_config_by_run_id(run_id)
+                config = [(key, value) for key, value in config.items() if value is not None]
+                df = pd.DataFrame(config, columns=["Name", "Value"])
+                table = dbc.Table.from_dataframe(df, striped=True, bordered=True, hover=True)
+                ret.append(table)
+                print(config)
+
+                #绘图部分
                 data = query.get_log(run_id)
                 data_df = DataFrame(data)
                 data_df["step"] = data_df.index
-                fig_list = []
-                key_list = []
                 for key in data.keys():
-                    if key == "step":
-                        continue
-                    fig = go.Scatter(x=data_df["step"].values,y=data_df[key].values)
-                    print(data_df["step"],data_df[key])
-                    fig_list.append(fig)
-                    key_list.append(key)
+                    title = html.H2(key)
+                    print(key)
+                    fig = px.line(data_df,x="step",y=key)
+                    ret.append(title)
+                    ret.append(dcc.Graph(figure=fig))
 
-                fig = make_subplots(rows=math.ceil(len(fig_list) / 3), cols=3, subplot_titles=key_list)
-
-                for idx,sub_fig in enumerate(fig_list):
-                    x = (idx)//3 + 1
-                    y = (idx)%3 + 1
-                    print(x,y)
-                    fig.append_trace(sub_fig,x,y)
-
-                dcc_fig = dcc.Graph(figure=fig)
-                ret.append(dcc.Graph(figure=fig))
                 ret.append(html.H2("test"))
                 return ret, n_clicks + 1
 
@@ -237,14 +260,3 @@ class userProject:
         ############################################################################
 
             return [], n_clicks
-
-        # @menu.callback(
-        #     Output("graph", "figure"),
-        #     Input("slider-width", "value")
-        # )
-        # def customize_width(left_width):
-        #     fig = make_subplots(rows=1, cols=2,column_widths=[left_width, 1 - left_width])
-        #     fig.add_trace(go.Scatter(x=[1, 2, 3], y=[4, 5, 6]),row=1, col=1)
-        #     fig.add_trace(go.Scatter(x=[20, 30, 40], y=[50, 60, 70]),row=1, col=2)
-        #
-        #     return fig

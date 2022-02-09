@@ -263,9 +263,18 @@ class sql_query(mysqlConnect):
         return results[0]['user_id']
 
     def get_config_by_run_id(self, run_id : int):
-        sql = 'SELECT project_name , last_activate_date FROM project WHERE '
+        sql = 'SELECT config,project_id FROM run WHERE run_id = {}'.format(run_id)
+        success1 , result1 = self.select(sql)
+        project_id = result1[0]["project_id"]
+        sql = 'SELECT project_name , last_activate_date , privacy FROM project WHERE project_id = {}'.format(project_id)
+        success2 , result2 = self.select(sql)
+        CONFIG = {**result1[0],**result2[0]}
+        success = success1 & success2
+        if not success:
+            print("error!")
+        print(CONFIG)
+        return CONFIG
 
-# if __name__ == '__main__':
-#     query = sql_query()
-#     config = {"test":100}
-#     query.enroll_run(user)_id=-1,project_id=27,run_name="test_config_dump_4",config=config)
+if __name__ == '__main__':
+    query = sql_query()
+    query.get_config_by_run_id(133)
