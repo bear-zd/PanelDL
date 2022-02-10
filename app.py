@@ -30,6 +30,7 @@ class userProject:
         self.first_name = None
         self.key_total = None
         self.charts = None
+        self.graphbar_style = None
         SIDEBAR_STYLE = {
             'position': 'fixed',
             'top': 0,
@@ -101,15 +102,16 @@ class userProject:
             style=SIDEBAR_STYLE,
         )
 
-        graphbar = html.Div(id="graphbar", style={"padding": "10%"})
-        emptydiv = html.Div(style = {"height": "10%"})
+        graphbar = html.Div(id="graphbar", style={"padding": "10%",  "background-color": "#F6F8FA", "width": "100%", "height": "100%", "position": "absolute"})
+
+        self.graphbar_style = {"padding": "10%",  "background-color": "#F6F8FA", "width": "100%", "height": "100%", "position": "absolute"}
 
         menu.layout = html.Div([
                 dcc.Location(id='url', refresh=False),
                 navbar, 
                 sidebar, 
                 graphbar
-            ], style = { "background-color": "#F6F8FA", "width": "100%", "height": "100%", "position": "absolute"})
+            ],)
 
         self.menu = menu
         @menu.callback(
@@ -190,6 +192,7 @@ class userProject:
         @menu.callback(
             Output("graphbar", "children"), 
             Output("open-Menu", "n_clicks"),
+            Output("graphbar", "style"), 
             Input("url", "pathname"), 
             State("open-Menu", "n_clicks"),
         )
@@ -285,8 +288,9 @@ class userProject:
 
                 #     # ret.append(html.Div([check_list,dcc.Graph(id="line-chart")]))
                 ret.append(html.H5("END"))
+                self.graphbar_style = {"padding": "10%",  "background-color": "#F6F8FA", "width": "100%", "height": "auto", "position": "absolute"}
 
-                return ret, n_clicks + 1
+                return ret, n_clicks + 1, self.graphbar_style
 
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
@@ -294,7 +298,7 @@ class userProject:
         #                             END OF YOUR CODE                             #
         ############################################################################
 
-            return [], n_clicks
+            return [], n_clicks, self.graphbar_style
 
         ############################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
