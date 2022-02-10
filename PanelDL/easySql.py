@@ -5,6 +5,7 @@ from collections import defaultdict
 from utils.sqlApi import mysqlConnect
 import datetime
 import json
+import time
 
 
 class sql_query(mysqlConnect):
@@ -352,6 +353,48 @@ class sql_query(mysqlConnect):
         #print(result)
         return result
 
+    def register(self, email, password, first_name=None, last_name=None):
+        """
+            注册，给出email和password即可直接进行注册
+            @param email:
+            @param password:
+            @return: 不返回值
+        """
+        first_name = 'NULL' if first_name == None else first_name
+        last_name = 'NULL' if last_name == None else last_name
+        time_now = time.strftime('%Y-%m-%d', time.localtime())
+        user_id = self.get_available('user_id')
+        sql = 'INSERT INTO user(first_name,last_name,email,register_date,user_id,password) VALUES("{}","{}","{}","{}",{},"{}")'.format(
+            first_name, last_name, email, time_now, user_id, password)
+        success, result = self.query(sql)
+        if not success:
+            print("log error!")
+
+    def delete_run(self, project_id, run_id):
+        sql = 'SELECT state FROM run WHERE run_id = {};'.format(run_id)
+        _, run_status = self.select(sql)
+        if run_status[0].get('state') == 'RUNNING' or run_status[0].get('state') == None:
+            print('The run is running!')
+            return False
+        else:
+            for run_data_pos in ['log_data', 'run', 'enroll_run']:
+                sql = 'DELETE FROM {} WHERE run_id = {};'.format(run_data_pos, run_id)
+                self.query(sql)
+
+    def delete_project(self, project_id):
+        sql = 'SELECT EXISTS (SELECT * FROM run WHERE state = \'RUNNING\' AND project_id={}) AS exist;'.format(
+            project_id)
+        # sql = 'SELECT run_id FROM enroll_run WHERE project_id = {}'.format(project_id)
+        _, project_run_state = self.select(sql)
+        if project_run_state[0]['exist'] == 1:
+            print('There exist run is running')
+        else:
+            run_id_list = self.get_runs_id_list(project_id)
+            for run_id in run_id_list:
+                self.delete_run(run_id)
+            for project_data_pos in ['run', 'enroll_run', 'project', 'enroll_project']:
+                sql = 'DELETE FROM {} WHERE project_id = {};'.format(project_data_pos, project_id)
+                self.query(sql)
 
 if __name__ == '__main__':
     query = sql_query()

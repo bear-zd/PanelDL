@@ -31,7 +31,7 @@ class mysqlConnect(object):
             #self.cursor.close()
             return True, result
         except:
-            print("Query error")
+            print("Query error:{}".format(sql))
             return False, None
 
 
@@ -43,7 +43,7 @@ class mysqlConnect(object):
             #self.cursor.close()
             return True, result
         except:
-            print('Select Error')
+            print("Select Error:{}".format(sql))
             return False, None
 
 
