@@ -4,11 +4,9 @@ from dash.dependencies import Input, Output, State
 from PanelDL.easySql import sql_query
 import plotly.express as px
 import pandas as pd
-import threading
 from pandas import DataFrame
 import numpy as np
 
-change_user_event = threading.Event()
 
 def dbg(a:str):
     print("\033[43m {}\033[0m".format(a))
@@ -41,22 +39,6 @@ class userProject:
             'background-color': '#f8f9fa'
         }
 
-        CONTENT_STYLE = {
-            'margin-left': '25%',
-            'margin-right': '5%',
-            'top': 0,
-            'padding': '20% 10%'
-        }
-
-        TEXT_STYLE = {
-            'textAlign': 'center',
-            'color': '#191970'
-        }
-
-        CARD_TEXT_STYLE = {
-            'textAlign': 'center',
-            'color': '#0074D9'
-        }
         menu = Dash(external_stylesheets=[dbc.themes.BOOTSTRAP], server=server, url_base_pathname=router)
         
         navbar = dbc.NavbarSimple(
