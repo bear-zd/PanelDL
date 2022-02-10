@@ -30,9 +30,9 @@ class mysqlConnect(object):
             self.connect.commit()
             #self.cursor.close()
             return True, result
-        except:
+        except pymysql.Error as e:
             print("Query error:{}".format(sql))
-            return False, None
+            return False, e
 
 
     def select(self, sql: str):

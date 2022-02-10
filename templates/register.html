@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<!-- saved from url=(0022)http://127.0.0.1:8050/ -->
 <html>
 
 <head>
@@ -1541,7 +1543,7 @@
 
   <title>Dash</title>
   <link rel="icon" type="image/x-icon" href="http://127.0.0.1:8050/_favicon.ico?v=2.1.0">
-  <link rel="stylesheet" href="{{url_for('static',filename='login_files/bootstrap.min.css')}}">
+  <link rel="stylesheet" href="{{url_for('static',filename='register_files/bootstrap.min.css')}}">
   <style>
     .dash-debug-menu {
       transition: 0.3s;
@@ -2122,8 +2124,8 @@
                       aria-label="Toggle navigation" class="navbar-toggler collapsed"><span
                         class="navbar-toggler-icon"></span></button>
                     <div class="navbar-collapse collapse">
-                      <div class="ms-auto navbar-nav"><a href="http://localhost:8080/register/" id="open-Register"
-                          class="btn btn-primary">Register</a><button id="navbar-toggler" n_clicks="0"
+                       <div class="ms-auto navbar-nav"><a href="http://localhost:8080/login/" id="open-Login"
+                          class="btn btn-primary">Login</a><button id="navbar-toggler" n_clicks="0"
                           n_clicks_timestamp="-1" type="button" aria-label="Toggle navigation"
                           class="navbar-toggler collapsed"><span class="navbar-toggler-icon"></span></button>
                         <div class="navbar-collapse collapse" id="navbar-collapse"></div>
@@ -2132,10 +2134,16 @@
                   </div>
                 </nav>
                 <div style="padding: 5% 15%;">
-                  <h1 style="font-size: 80px; text-align: center;">Welcome to PanelDL!</h1>
+                  <h1 style="font-size: 80px; text-align: center;">Register</h1>
                   <div style="padding: 3%;"></div>
                   <form method="post">
-                    <div class="mb-3"><label class="form-label" for="example-email">Email</label><input type="text"
+                    <div class="mb-3"><label class="form-label" for="example-first-name">First Name</label><input
+                        type="text" class="form-control" id="example-first-name" name="example-first-name"
+                        placeholder="Enter Your First Name" step="any"></div>
+                    <div class="mb-3"><label class="form-label" for="example-last-name">Last Name</label><input
+                        type="text" class="form-control" id="example-last-name" name="example-last-name"
+                        placeholder="Enter Your Last Name" step="any"></div>
+                    <div class="mb-3"><label class="form-label" for="example-email">Email</label><input type="email"
                         class="form-control" id="example-email" name="example-email" placeholder="Enter email"
                         step="any"><small class="text-secondary form-text">Are you on email? You simply have to be these
                         days</small>
@@ -2145,7 +2153,8 @@
                         placeholder="Enter password" step="any"><small class="text-secondary form-text">A password stops
                         mean people taking your
                         stuff</small></div>
-                    <button type="submit" class="me-1 btn btn-primary" style="margin-left: 93.5%;">Login</button>{{msg}}
+                    <button class="me-1 btn btn-primary" type="submit"
+                      style="margin-left: 93.5%;">Submit</button>{{msg}}
                   </form>
                 </div>
               </div>
@@ -2176,7 +2185,7 @@
       }
     </script>
     <script
-      src="{{url_for('static',filename='login_files/dash_bootstrap_components.v1_0_3m1644240693.min.js.download')}}">
+      src="{{url_for('static',filename='register_files/dash_bootstrap_components.v1_0_3m1644240693.min.js.download')}}">
     </script>
     <script id="_dash-renderer" type="application/javascript">
       var renderer = new DashRenderer();

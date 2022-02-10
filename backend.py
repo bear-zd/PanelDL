@@ -22,20 +22,34 @@ query = easySql.sql_query()
 
 
 @server.route('/', methods=["GET", "POST"], endpoint='/')
-@server.route('/login/', methods=["GET", "POST"], endpoint='/')  # 路由默认接收请求方式位POST，然而登录所需要请求都有，所以要特别声明。
+@server.route('/login/', methods=["GET", "POST"], endpoint='/login')  # 路由默认接收请求方式位POST，然而登录所需要请求都有，所以要特别声明。
 def user_login():
     if request.method == 'GET':
         return render_template('login.html')
-    user = request.form.get('example-email')
-    pwd = request.form.get('example-password')
+    email = request.form.get('example-email')
+    password = request.form.get('example-password')
     global query
-    user_id = query.get_user_id(user, pwd)
+    user_id = query.get_user_id(email, password)
     if user_id != None:
         menu.change_user(user_id)
         return redirect('/menu')
     else:
         return render_template('login.html', msg='用户名或密码输入错误')
 
+@server.route('/register/',methods=["GET", "POST"])
+def user_register():
+    if request.method == 'GET':
+        return render_template('register.html')
+    first_name = request.form.get('example-first-name')
+    last_name = request.form.get('example-last-name')
+    email = request.form.get('example-email')
+    password = request.form.get('example-password')
+    global query
+    status, callback_msg = query.register(email, password, first_name, last_name)
+    if status :
+        return redirect('/login')
+    else:
+        return render_template('register.html', msg=callback_msg)
 
 @server.route('/ping')
 def ping():

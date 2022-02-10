@@ -368,7 +368,12 @@ class sql_query(mysqlConnect):
             first_name, last_name, email, time_now, user_id, password)
         success, result = self.query(sql)
         if not success:
-            print("log error!")
+            if result.args[0] == 1062:
+                return success, '该邮箱已被注册！'
+            else:
+                return success, '未知错误！'
+        else :
+            return success, None
 
     def delete_run(self, project_id, run_id):
         sql = 'SELECT state FROM run WHERE run_id = {};'.format(run_id)
