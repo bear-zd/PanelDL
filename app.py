@@ -102,13 +102,14 @@ class userProject:
         )
 
         graphbar = html.Div(id="graphbar", style={"padding": "10%"})
+        emptydiv = html.Div(style = {"height": "10%"})
 
         menu.layout = html.Div([
                 dcc.Location(id='url', refresh=False),
                 navbar, 
                 sidebar, 
                 graphbar
-            ])
+            ], style = { "background-color": "#F6F8FA", "width": "100%", "height": "100%", "position": "absolute"})
 
         self.menu = menu
         @menu.callback(
