@@ -87,8 +87,14 @@ class userProject:
         graphbar = html.Div(
                 [
                     html.Img(src=menu.get_asset_url('PanelDL.png'), style = {"width" : "100%", "height" : "100%"})
-            ], style={"padding": "10%",  "background-color": "#F6F8FA", "width": "100%", "height": "auto", "position": "absolute"}
+            ], 
+                id="graphbar",
+                style={"padding": "10%",  "background-color": "#F6F8FA", "width": "100%", "height": "auto", "position": "absolute"}
         )
+
+        self.graphbar_style = {"padding": "10%",  "background-color": "#F6F8FA", "width": "100%", "height": "auto", "position": "absolute"}
+
+        self.menu_img = html.Img(src=menu.get_asset_url('PanelDL.png'), style = {"width" : "100%", "height" : "100%"})
 
         menu.layout = html.Div([
                 dcc.Location(id='url', refresh=False),
@@ -283,7 +289,7 @@ class userProject:
         #                             END OF YOUR CODE                             #
         ############################################################################
 
-            return [], n_clicks, self.graphbar_style
+            return self.menu_img, n_clicks, self.graphbar_style
 
         ############################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
