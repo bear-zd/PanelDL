@@ -84,16 +84,19 @@ class userProject:
             style=SIDEBAR_STYLE,
         )
 
-        graphbar = html.Div(id="graphbar", style={"padding": "10%",  "background-color": "#F6F8FA", "width": "100%", "height": "100%", "position": "absolute"})
-
-        self.graphbar_style = {"padding": "10%",  "background-color": "#F6F8FA", "width": "100%", "height": "100%", "position": "absolute"}
+        graphbar = html.Div(
+                [
+                    html.Img(src=menu.get_asset_url('PanelDL.png'), style = {"width" : "100%", "height" : "100%"})
+            ], style={"padding": "10%",  "background-color": "#F6F8FA", "width": "100%", "height": "auto", "position": "absolute"}
+        )
 
         menu.layout = html.Div([
                 dcc.Location(id='url', refresh=False),
                 navbar, 
                 sidebar, 
                 graphbar
-            ],)
+            ],
+            )
 
         self.menu = menu
         @menu.callback(
