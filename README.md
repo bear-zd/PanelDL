@@ -68,7 +68,7 @@ for run in range(total_runs):
   for epoch in range(2, epochs):
       acc = 1 - 2 ** -epoch - random.random() / epoch - offset
       loss = 2 ** -epoch + random.random() / epoch + offset
-      # 2️⃣ Log metrics from your script to W&B
+      # 2️⃣ Log metrics from your script to PanelDL
       PD.log({"acc": acc, "loss": loss})
 
 ```
