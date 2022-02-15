@@ -314,7 +314,6 @@ class sql_query(mysqlConnect):
             success1, result = self.select(sql)
         if not success1:
             print("error!")
-        #print("result:",result)
         return result
         # print("run_id_lisy",run_id_list)
         # print(type(run_id_list))

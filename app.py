@@ -281,6 +281,7 @@ class userProject:
                 if len(data)!=0:
                     self.df = DataFrame(data)
                     self.run_id_to_name_dict = query.get_run_id_to_name_dict(project_id=self.project_id)
+                    print(self.df)
                     self.run_name_to_id_dict = {value: key for key, value in self.run_id_to_name_dict.items()}
                     self.df["run_name"] = [self.run_id_to_name_dict[x] for x in self.df["run_id"]]
 
@@ -293,16 +294,16 @@ class userProject:
 
 
                 #     # ret.append(html.Div([check_list,dcc.Graph(id="line-chart")]))
-                ret.append(html.H5("END"))
+                #ret.append(html.H5("END"))
                 self.graphbar_style = {"padding": "10%",  "background-color": "#F6F8FA", "width": "100%", "height": "auto", "position": "absolute"}
 
 
                 #绘制sweep图部分
                 self.config_list = query.get_config_list(self.project_id)
-                self.df = DataFrame(self.config_list)
-                color_col = self.df.columns[0]
-                midpoint = np.average(self.df[color_col])
-                fig = px.parallel_coordinates(self.df, color=color_col, color_continuous_scale=px.colors.diverging.Tealrose,color_continuous_midpoint=midpoint)
+                df = DataFrame(self.config_list)
+                color_col = df.columns[0]
+                midpoint = np.average(df[color_col])
+                fig = px.parallel_coordinates(df, color=color_col, color_continuous_scale=px.colors.diverging.Tealrose,color_continuous_midpoint=midpoint)
                 ret.append(dcc.Graph(figure=fig))
 
                 return ret, n_clicks + 1, self.graphbar_style
@@ -337,6 +338,7 @@ class userProject:
                     run_ids = [self.run_name_to_id_dict[name] for name in run_names]
                 except:
                     run_ids = []
+
                 mask1 = self.df.run_id.isin(run_ids)
                 mask2 = self.df.key.isin([key])
                 mask = mask1&mask2
