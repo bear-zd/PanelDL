@@ -14,7 +14,6 @@ from app import userProject
 menu = userProject(server)
 query = easySql.sql_query()
 
-
 # dash_app1 = Dash(__name__, server=server, url_base_pathname='/dashboard/')
 # dash_app2 = Dash(__name__, server=server, url_base_pathname='/reports/')
 # dash_app1.layout = html.Div([html.H1('Hi there, I am app1 for dashboards')])
@@ -73,5 +72,4 @@ app = DispatcherMiddleware(server, {
     '/dash1': menu.menu.server
     # '/dash2': dash_app2.server
 })
-# session['secret_key'] = 'paneldlllldlenap'
 run_simple('0.0.0.0', 8080, app, use_reloader=True, use_debugger=True)

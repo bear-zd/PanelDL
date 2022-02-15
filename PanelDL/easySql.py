@@ -401,6 +401,20 @@ class sql_query(mysqlConnect):
                 sql = 'DELETE FROM {} WHERE run_id = {};'.format(run_data_pos, run_id)
                 self.query(sql)
 
+    def delete_run_anyway(self, project_id, run_id):
+        """
+        强制删除
+        @param project_id:
+        @param run_id:
+        @return:
+        """
+        sql = 'SELECT state FROM run WHERE run_id = {};'.format(run_id)
+        _, run_status = self.select(sql)
+
+        for run_data_pos in ['log_data', 'run', 'enroll_run']:
+            sql = 'DELETE FROM {} WHERE run_id = {};'.format(run_data_pos, run_id)
+            self.query(sql)
+
     def delete_project(self, project_id):
         sql = 'SELECT EXISTS (SELECT * FROM run WHERE state = \'RUNNING\' AND project_id={}) AS exist;'.format(
             project_id)
@@ -417,8 +431,22 @@ class sql_query(mysqlConnect):
                 self.query(sql)
 
 
+    def get_config_list(self,project_id:int):
+        """
+        为绘制总sweep图使用
+        返回为包含全部para的list
+        @param project_id:
+        @return:
+        """
+        sql = 'SELECT config FROM run WHERE project_id={}'.format(project_id)
+        success , result = self.select(sql)
+        if not success:
+            print("get_config error!")
+        config_list = [json.loads(para["config"]) for para in result if "config" in para.keys() and para["config"] != None]
+        print(config_list)
+        return config_list
+
 
 if __name__ == '__main__':
     query = sql_query()
-    config = {'batch_size': 9, 'epochs': 40, 'lr': 0.006681114660920741, 'model': 'convnext_base', 'optimizer': 'sgd', 'root': '/home/cth/medical/pic_trans_1', 'weight_decay': 0.026987313080480524}
-    query.enroll_run(-1,27,"test_config_00",config)
+    query.get_config_list(27)

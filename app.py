@@ -230,7 +230,7 @@ class userProject:
 
                 ret = []
 
-                #CONFIG部分
+                #Project表格
                 ret.append(html.H3("Project"))
                 config_dict = query.get_config_by_run_id(run_id)
                 self.project_id = config_dict["project_id"]
@@ -239,7 +239,11 @@ class userProject:
                 table = dbc.Table.from_dataframe(df, striped=True, bordered=True, hover=True)
                 ret.append(table)
 
-                if "config" in config_dict.keys():
+
+
+
+                #Config表格
+                if "config" in config_dict.keys() and config_dict["config"]!=None:
                     para_dict = json.loads(config_dict["config"])
                     ret.append(html.H3(""))
                     ret.append(html.H3("Config"))
@@ -248,7 +252,9 @@ class userProject:
                     table = dbc.Table.from_dataframe(df, striped=True, bordered=True, hover=True)
                     ret.append(table)
 
-                #绘图部分
+
+
+                #绘分图部分
                 data = query.get_log(run_id)
                 data_df = DataFrame(data)
                 data_df["step"] = data_df.index
@@ -258,8 +264,8 @@ class userProject:
                     ret.append(title)
                     ret.append(dcc.Graph(figure=fig))
 
-                #绘制总图部分
 
+                #绘制总图部分
                 key_total = query.get_unique_key(self.project_id)
                 self.key_total = key_total
                 run_name_all = query.get_runs_name_list( project_id = self.project_id)
@@ -277,7 +283,6 @@ class userProject:
                     self.run_id_to_name_dict = query.get_run_id_to_name_dict(project_id=self.project_id)
                     self.run_name_to_id_dict = {value: key for key, value in self.run_id_to_name_dict.items()}
                     self.df["run_name"] = [self.run_id_to_name_dict[x] for x in self.df["run_id"]]
-                    # print(self.df)
 
                     # # print(self.key_total)
                     # for idx, key in enumerate(self.key_total):
@@ -290,6 +295,15 @@ class userProject:
                 #     # ret.append(html.Div([check_list,dcc.Graph(id="line-chart")]))
                 ret.append(html.H5("END"))
                 self.graphbar_style = {"padding": "10%",  "background-color": "#F6F8FA", "width": "100%", "height": "auto", "position": "absolute"}
+
+
+                #绘制sweep图部分
+                self.config_list = query.get_config_list(self.project_id)
+                self.df = DataFrame(self.config_list)
+                color_col = self.df.columns[0]
+                midpoint = np.average(self.df[color_col])
+                fig = px.parallel_coordinates(self.df, color=color_col, color_continuous_scale=px.colors.diverging.Tealrose,color_continuous_midpoint=midpoint)
+                ret.append(dcc.Graph(figure=fig))
 
                 return ret, n_clicks + 1, self.graphbar_style
 

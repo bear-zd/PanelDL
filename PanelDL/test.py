@@ -125,13 +125,37 @@
 #
 # app.run_server(debug=True)
 
-import json
-config = {'batch_size': 58, 'epochs': 40, 'lr': 0.004653869786938217, 'model': 'resnet34', 'optimizer': 'sgd', 'root': '/home/cth/medical/pic_trans_1', 'weight_decay': 0.02930755111027491}
-config = {}
-config = {'batch_size': 9, 'epochs': 40, 'lr': 0.005949914039660319, 'model': 'small_swin', 'optimizer': 'sgd', 'root': '/home/cth/medical/pic_trans_1', 'weight_decay': 0.004414406943967377}
-config_json = json.dumps(config)
-print(config_json)
+# import json
+# config = {'batch_size': 58, 'epochs': 40, 'lr': 0.004653869786938217, 'model': 'resnet34', 'optimizer': 'sgd', 'root': '/home/cth/medical/pic_trans_1', 'weight_decay': 0.02930755111027491}
+# config = {}
+# config = {'batch_size': 9, 'epochs': 40, 'lr': 0.005949914039660319, 'model': 'small_swin', 'optimizer': 'sgd', 'root': '/home/cth/medical/pic_trans_1', 'weight_decay': 0.004414406943967377}
+# config_json = json.dumps(config)
+# print(config_json)
+#
+# config = {'batch_size': 27, 'epochs': 40, 'lr': 0.0018898441910914455, 'model': 'resnet34', 'optimizer': 'sgd', 'root': '/home/cth/medical/pic_trans_1', 'weight_decay': 0.01292644501976178}
+# print(json.dumps(config))
+# #INSERT INTO enroll_run(user_id,project_id,run_create_date,run_name,run_id) VALUES(-1,31,'2022-02-15 18:16:16.933563','swin_transformer1',155)
 
-config = {'batch_size': 27, 'epochs': 40, 'lr': 0.0018898441910914455, 'model': 'resnet34', 'optimizer': 'sgd', 'root': '/home/cth/medical/pic_trans_1', 'weight_decay': 0.01292644501976178}
-print(json.dumps(config))
-#INSERT INTO enroll_run(user_id,project_id,run_create_date,run_name,run_id) VALUES(-1,31,'2022-02-15 18:16:16.933563','swin_transformer1',155)
+from pandas import DataFrame
+import plotly.express as px
+import random
+import numpy as np
+
+key = ["lr","root","model","epoch"]
+#config_list = [{'lr': 0.006681114660920741, 'root': '/home/cth/medical/pic_trans_1', 'model': 'convnext_base', 'epochs': 40, 'optimizer': 'sgd', 'batch_size': 9, 'weight_decay': 0.026987313080480524}, {'lr': 0.106681114660920741, 'root': '/home/cth/medical/pic_trans_1', 'model': 'convnext_base', 'epochs': 40, 'optimizer': 'sgd', 'batch_size': 9, 'weight_decay': 0.026987313080480524}, {'lr': 0.006681114660920741, 'root': '/home/cth/medical/pic_trans_1', 'model': 'convnext_base', 'epochs': 40, 'optimizer': 'sgd', 'batch_size': 9, 'weight_decay': 0.026987313080480524}, {'lr': 0.006681114660920741, 'root': '/home/cth/medical/pic_trans_1', 'model': 'convnext_base', 'epochs': 40, 'optimizer': 'sgd', 'batch_size': 9, 'weight_decay': 0.026987313080480524}, {'lr': 0.006681114660920741, 'root': '/home/cth/medical/pic_trans_1', 'model': 'convnext_base', 'epochs': 40, 'optimizer': 'sgd', 'batch_size': 9, 'weight_decay': 0.026987313080480524}, {'lr': 0.006681114660920741, 'root': '/home/cth/medical/pic_trans_1', 'model': 'convnext_base', 'epochs': 40, 'optimizer': 'sgd', 'batch_size': 9, 'weight_decay': 0.026987313080480524}]
+config_list = []
+for epo in range(30):
+    dic = dict()
+    for key_ele in key:
+        dic[key_ele] = random.random()
+        dic["test"] = random.choice(("a","b"))
+    config_list.append(dic)
+#config_list = [{'lr': 0.006681114660920741, 'root': '/home/cth/medical/pic_trans_1', 'model': 'convnext_base', 'epochs': 40, 'optimizer': 'sgd', 'batch_size': 9, 'weight_decay': 0.026987313080480524}, {'lr': 0.106681114660920741, 'root': '/home/cth/medical/pic_trans_1', 'model': 'convnext_base', 'epochs': 40, 'optimizer': 'sgd', 'batch_size': 9, 'weight_decay': 0.026987313080480524}, {'lr': 0.006681114660920741, 'root': '/home/cth/medical/pic_trans_1', 'model': 'convnext_base', 'epochs': 40, 'optimizer': 'sgd', 'batch_size': 9, 'weight_decay': 0.026987313080480524}, {'lr': 0.006681114660920741, 'root': '/home/cth/medical/pic_trans_1', 'model': 'convnext_base', 'epochs': 40, 'optimizer': 'sgd', 'batch_size': 9, 'weight_decay': 0.026987313080480524}, {'lr': 0.006681114660920741, 'root': '/home/cth/medical/pic_trans_1', 'model': 'convnext_base', 'epochs': 40, 'optimizer': 'sgd', 'batch_size': 9, 'weight_decay': 0.026987313080480524}, {'lr': 0.006681114660920741, 'root': '/home/cth/medical/pic_trans_1', 'model': 'convnext_base', 'epochs': 40, 'optimizer': 'sgd', 'batch_size': 9, 'weight_decay': 0.026987313080480524}]
+df = DataFrame(config_list)
+color_col = df.columns[0]
+print(df)
+midpoint = np.average(df[color_col])
+fig = px.parallel_coordinates(df, color=color_col,color_continuous_scale=px.colors.diverging.Tealrose, color_continuous_midpoint=midpoint)
+
+fig.show()
+
