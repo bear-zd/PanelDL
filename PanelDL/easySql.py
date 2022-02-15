@@ -1,8 +1,9 @@
+#utf-8
 import pandas as pd
 import numpy as np
 import pymysql
 from collections import defaultdict
-from utils.sqlApi import mysqlConnect
+from PanelDL.utils.sqlApi import mysqlConnect
 import datetime
 import json
 import time
@@ -172,7 +173,7 @@ class sql_query(mysqlConnect):
             return None
         return results[0]["project_id"] if len(results) != 0 else self.enroll_project(user_id, project_name)
 
-    def enroll_run(self, user_id: int, project_id: int, run_name: str, config: str = "NULL"):
+    def enroll_run(self, user_id: int, project_id: int, run_name: str, config: dict = {}):
         """
         注册一项新的run
         改动enroll_run与run两张表
@@ -182,26 +183,39 @@ class sql_query(mysqlConnect):
         @param config:
         @return: run_id / None(fail)
         """
-        sql = "SELECT run_id FROM enroll_run WHERE project_id = {} AND run_name = {}".format(project_id, run_name)
+        sql = "SELECT run_id FROM enroll_run WHERE project_id = {} AND run_name = \'{}\'".format(project_id, run_name)
+        #print(sql)
         success, result = self.query(sql)
-        assert((result == 0) | (result is None))
+        # assert((result == 0) | (result is None))
 
         run_id = self.get_available("run_id")
         sql = "INSERT INTO enroll_run(user_id,project_id,run_create_date,run_name,run_id) VALUES({},{},\'{}\',\'{}\',{})".format(
             user_id, project_id, datetime.datetime.now(), run_name, run_id)
         success1, results = self.query(sql)
 
-        sql = "INSERT INTO run(run_id,project_id,config,state,start_time) VALUES({},{},\'{}\',\'{}\',\'{}\')".format(run_id,
+        # print(success,success1)
+        config = dict(config)
+        # print("config:",config)
+        # print(type(config))
+        # print(json.dumps(config))
+
+        try:
+            sql = "INSERT INTO run(run_id,project_id,config,state,start_time) VALUES({},{},\'{}\',\'{}\',\'{}\')".format(run_id,
                                                                                                                  project_id,
                                                                                                                  json.dumps(config),
                                                                                                                  "RUNNING",
                                                                                                                  datetime.datetime.now())
-        print(sql)
+        except:
+            print("JSON ERROR!")
+
+        # print(sql)
         success2, results = self.query(sql)
         success = success1 & success2
+        # print(success1,success2)
         if not success:
             print("enroll run error!")
             return None
+        # print("enroll_run success : ",run_id)
         return run_id
 
     def get_step(self, run_id):
@@ -401,7 +415,9 @@ class sql_query(mysqlConnect):
                 sql = 'DELETE FROM {} WHERE project_id = {};'.format(project_data_pos, project_id)
                 self.query(sql)
 
+
+
 if __name__ == '__main__':
     query = sql_query()
-    query.get_unique_key(26)
-
+    config = {'batch_size': 9, 'epochs': 40, 'lr': 0.006681114660920741, 'model': 'convnext_base', 'optimizer': 'sgd', 'root': '/home/cth/medical/pic_trans_1', 'weight_decay': 0.026987313080480524}
+    query.enroll_run(-1,27,"test_config_00",config)

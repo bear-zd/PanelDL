@@ -236,7 +236,6 @@ class userProject:
                 df = pd.DataFrame(config, columns=["Name", "Value"])
                 table = dbc.Table.from_dataframe(df, striped=True, bordered=True, hover=True)
                 ret.append(table)
-                #print(config)
 
                 #绘图部分
                 data = query.get_log(run_id)

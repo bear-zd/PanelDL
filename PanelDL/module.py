@@ -28,7 +28,7 @@ class PanelDL():
             self.user_id = user_id
 
 
-    def init(self, project:str = "uncategorized",config:str = "NULL", run_name:str = None):
+    def init(self, project:str = "uncategorized",config:dict = {}, run_name:str = None):
         """
         @param project: 工程名称
         @param config: 单次训练config
