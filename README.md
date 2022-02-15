@@ -12,7 +12,7 @@ Use [PanelDL](http://paneldl.zidea.site) for machine learning experiment tarckin
 
 With just a few lines of code , you'll get rich , interactive , shareable dashboards
 
-<img src="./image/image-20220214214838205.png" alt="Patch_many" style="zoom: 100%;" />
+<img src="./Image/image-20220214214838205.png" alt="Patch_many" style="zoom: 100%;" />
 
 ## 🪄 Install `PanelDL` library and login
 
