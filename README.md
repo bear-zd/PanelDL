@@ -79,7 +79,7 @@ for run in range(total_runs):
 
 
 
-<img src="./image/image-20220214220143307.png" alt="Patch_many" style="zoom: 50%;" />
+<img src="./Image/image-20220214220143307.png" alt="Patch_many" style="zoom: 50%;" />
 
 
 
