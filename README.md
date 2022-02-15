@@ -12,7 +12,7 @@ Use [PanelDL](http://paneldl.zidea.site) for machine learning experiment tarckin
 
 With just a few lines of code , you'll get rich , interactive , shareable dashboards
 
-<img src="./image/image-20220214214838205.png" alt="Patch_many" style="zoom: 100%;" />
+<img src="./Image/image-20220214214838205.png" alt="Patch_many" style="zoom: 100%;" />
 
 ## 🪄 Install `PanelDL` library and login
 
@@ -68,7 +68,7 @@ for run in range(total_runs):
   for epoch in range(2, epochs):
       acc = 1 - 2 ** -epoch - random.random() / epoch - offset
       loss = 2 ** -epoch + random.random() / epoch + offset
-      # 2️⃣ Log metrics from your script to W&B
+      # 2️⃣ Log metrics from your script to PanelDL
       PD.log({"acc": acc, "loss": loss})
 
 ```
@@ -79,7 +79,7 @@ for run in range(total_runs):
 
 
 
-<img src="./image/image-20220214220143307.png" alt="Patch_many" style="zoom: 50%;" />
+<img src="./Image/image-20220214220143307.png" alt="Patch_many" style="zoom: 50%;" />
 
 
 
