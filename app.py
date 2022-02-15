@@ -6,6 +6,7 @@ import plotly.express as px
 import pandas as pd
 from pandas import DataFrame
 import numpy as np
+import json
 
 
 def dbg(a:str):
@@ -230,12 +231,22 @@ class userProject:
                 ret = []
 
                 #CONFIG部分
+                ret.append(html.H3("Project"))
                 config_dict = query.get_config_by_run_id(run_id)
                 self.project_id = config_dict["project_id"]
-                config = [(key, value) for key, value in config_dict.items() if value is not None]
+                config = [(key, value) for key, value in config_dict.items() if value is not None and key != "config"]
                 df = pd.DataFrame(config, columns=["Name", "Value"])
                 table = dbc.Table.from_dataframe(df, striped=True, bordered=True, hover=True)
                 ret.append(table)
+
+                if "config" in config_dict.keys():
+                    para_dict = json.loads(config_dict["config"])
+                    ret.append(html.H3(""))
+                    ret.append(html.H3("Config"))
+                    config = [(key,value) for key,value in para_dict.items() if value is not None]
+                    df = pd.DataFrame(config, columns=["Name", "Value"])
+                    table = dbc.Table.from_dataframe(df, striped=True, bordered=True, hover=True)
+                    ret.append(table)
 
                 #绘图部分
                 data = query.get_log(run_id)

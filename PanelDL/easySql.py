@@ -288,6 +288,7 @@ class sql_query(mysqlConnect):
         sql = 'SELECT project_name , last_activate_date , privacy FROM project WHERE project_id = {}'.format(project_id)
         success2 , result2 = self.select(sql)
         CONFIG = {**result1[0],**result2[0],"run_id":run_id}
+
         success = success1 & success2
         if not success:
             print("error!")
