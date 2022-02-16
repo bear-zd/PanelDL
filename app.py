@@ -300,11 +300,15 @@ class userProject:
 
                 #绘制sweep图部分
                 self.config_list = query.get_config_list(self.project_id)
-                df = DataFrame(self.config_list)
-                color_col = df.columns[0]
-                midpoint = np.average(df[color_col])
-                fig = px.parallel_coordinates(df, color=color_col, color_continuous_scale=px.colors.diverging.Tealrose,color_continuous_midpoint=midpoint)
-                ret.append(dcc.Graph(figure=fig))
+                print("config_list:",self.config_list)
+
+                if len(self.config_list)!=0:
+                    print("draw sweep graph")
+                    df = DataFrame(self.config_list)
+                    color_col = df.columns[0]
+                    midpoint = np.average(df[color_col])
+                    fig = px.parallel_coordinates(df, color=color_col, color_continuous_scale=px.colors.diverging.Tealrose,color_continuous_midpoint=midpoint)
+                    ret.append(dcc.Graph(figure=fig))
 
                 return ret, n_clicks + 1, self.graphbar_style
 
