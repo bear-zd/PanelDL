@@ -429,6 +429,15 @@ class sql_query(mysqlConnect):
                 sql = 'DELETE FROM {} WHERE project_id = {};'.format(project_data_pos, project_id)
                 self.query(sql)
 
+    def delete_project_anyway(self,project_id):
+        run_id_list = self.get_runs_id_list(project_id)
+        for run_id in run_id_list:
+            self.delete_run_anyway(project_id,run_id)
+        for project_data_pos in ['run', 'enroll_run', 'project', 'enroll_project']:
+            sql = 'DELETE FROM {} WHERE project_id = {};'.format(project_data_pos, project_id)
+            self.query(sql)
+
+
 
     def get_config_list(self,project_id:int):
         """
@@ -448,4 +457,6 @@ class sql_query(mysqlConnect):
 
 if __name__ == '__main__':
     query = sql_query()
-    query.get_config_list(27)
+    for project_id in [28,29,30,31]:
+        print(project_id)
+        query.delete_project_anyway(project_id)
